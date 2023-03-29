@@ -1,4 +1,4 @@
-package devracom.Mnemosyne.config.jwt;
+package devracom.Mnemosyne.config.security.jwt;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

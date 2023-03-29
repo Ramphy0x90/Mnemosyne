@@ -1,4 +1,4 @@
-package devracom.Mnemosyne.config.jwt;
+package devracom.Mnemosyne.config.security.jwt;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
