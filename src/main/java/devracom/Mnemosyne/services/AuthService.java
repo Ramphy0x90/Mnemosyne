@@ -1,12 +1,14 @@
 package devracom.Mnemosyne.services;
 
-import devracom.Mnemosyne.config.jwt.JwtService;
+import devracom.Mnemosyne.config.security.jwt.JwtService;
+import devracom.Mnemosyne.exceptions.Role.RoleNotFoundException;
 import devracom.Mnemosyne.models.Account;
 import devracom.Mnemosyne.models.Role;
 import devracom.Mnemosyne.models.dto.AuthRequest;
 import devracom.Mnemosyne.models.dto.AuthResponse;
 import devracom.Mnemosyne.models.dto.RegisterRequest;
 import devracom.Mnemosyne.repositories.AccountRepository;
+import devracom.Mnemosyne.repositories.RoleRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -17,13 +19,15 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class AuthService {
     private final AccountRepository accountRepository;
+    private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
 
     public AuthResponse register(RegisterRequest request) {
-        Role role = new Role();
-        role.setName("user");
+        Role role = roleRepository.getByName("ROLE_USER").orElseThrow(
+                () -> new RoleNotFoundException("Role not found")
+        );
 
         var account = Account.builder()
                 .username(request.getUsername())
