@@ -71,6 +71,6 @@ public class Account implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return active;
+        return active != null && active;
     }
 }

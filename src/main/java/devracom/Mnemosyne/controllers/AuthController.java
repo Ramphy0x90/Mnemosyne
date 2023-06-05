@@ -35,11 +35,11 @@ public class AuthController {
 
     @Operation(summary = "Account authentication")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "201", description = "Successfully created new ticket"),
+            @ApiResponse(responseCode = "201", description = "User authenticated"),
             @ApiResponse(responseCode = "401", description = "Authorization denied", content = @Content),
 
     })
-    @PostMapping("/authenticate")
+    @PostMapping("/login")
     public ResponseEntity<AuthResponse> authenticate(
             @RequestBody AuthRequest request
     ) {

@@ -12,6 +12,7 @@ import devracom.Mnemosyne.repositories.RoleRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -42,12 +43,18 @@ public class AuthService {
     }
 
     public AuthResponse authenticate(AuthRequest request) {
-        authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        request.getUsername(),
-                        request.getPassword()
-                )
-        );
+        Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
+                request.getUsername(),
+                request.getPassword()
+        ));
+
+        System.out.println("\n\n AFTER AUTH");
+
+        if(authentication.isAuthenticated()) {
+            System.out.println("AUTHEEEE");
+        } else {
+            System.out.println(authentication.getAuthorities());
+        }
 
         Account account = accountRepository.findByUsername(request.getUsername()).orElseThrow();
         String jwtToken = jwtService.generateToken(account);
