@@ -1,6 +1,7 @@
 package devracom.Mnemosyne.services;
 
 import devracom.Mnemosyne.config.security.jwt.JwtService;
+import devracom.Mnemosyne.exceptions.Auth.WrongCredentialsException;
 import devracom.Mnemosyne.exceptions.Role.RoleNotFoundException;
 import devracom.Mnemosyne.models.Account;
 import devracom.Mnemosyne.models.Role;
@@ -12,7 +13,6 @@ import devracom.Mnemosyne.repositories.RoleRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -43,17 +43,13 @@ public class AuthService {
     }
 
     public AuthResponse authenticate(AuthRequest request) {
-        Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
-                request.getUsername(),
-                request.getPassword()
-        ));
-
-        System.out.println("\n\n AFTER AUTH");
-
-        if(authentication.isAuthenticated()) {
-            System.out.println("AUTHEEEE");
-        } else {
-            System.out.println(authentication.getAuthorities());
+        try {
+            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
+                    request.getUsername(),
+                    request.getPassword()
+            ));
+        } catch(Exception e) {
+            throw new WrongCredentialsException("Wrong credentials");
         }
 
         Account account = accountRepository.findByUsername(request.getUsername()).orElseThrow();
