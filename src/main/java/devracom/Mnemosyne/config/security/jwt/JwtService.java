@@ -10,29 +10,23 @@ import org.springframework.stereotype.Service;
 
 import java.security.Key;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.function.Function;
 
 @Service
 public class JwtService {
     private static final String SECRET_KEY = "46294A404E635266556A586E5A7234753778214125442A472D4B6150645367566B59703373357638792F423F4528482B4D6251655468576D5A7134743777397A";
 
-    public String generateToken(Map<String, Object> claims, UserDetails userDetails) {
+    public String generateToken(UserDetails userDetails) {
         Date creationDate = new Date(System.currentTimeMillis());
         Date expirationDate = new Date(System.currentTimeMillis() + 1000 * 60 * 24);
 
         return Jwts.builder()
-                .setClaims(claims)
+                .claim("authorities", userDetails.getAuthorities())
                 .setSubject(userDetails.getUsername())
                 .setIssuedAt(creationDate)
                 .setExpiration(expirationDate)
                 .signWith(getSignInKey(), SignatureAlgorithm.HS256)
                 .compact();
-    }
-
-    public String generateToken(UserDetails userDetails) {
-        return generateToken(new HashMap<>(), userDetails);
     }
 
     public boolean isTokenValid(String jwtToken, UserDetails userDetails) {
