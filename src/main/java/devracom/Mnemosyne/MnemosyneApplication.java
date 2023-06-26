@@ -1,5 +1,7 @@
 package devracom.Mnemosyne;
 
+import devracom.Mnemosyne.services.FileService;
+import jakarta.annotation.Resource;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
