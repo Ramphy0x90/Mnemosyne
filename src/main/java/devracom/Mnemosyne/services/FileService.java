@@ -3,6 +3,7 @@ package devracom.Mnemosyne.services;
 import devracom.Mnemosyne.controllers.FileController;
 import devracom.Mnemosyne.models.Account;
 import devracom.Mnemosyne.models.FileInfo;
+import devracom.Mnemosyne.models.dto.CreateFolderRequest;
 import devracom.Mnemosyne.models.dto.FilesResponse;
 import devracom.Mnemosyne.repositories.AccountRepository;
 import org.springframework.core.io.Resource;
@@ -14,10 +15,7 @@ import org.springframework.util.FileSystemUtils;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder;
 
-import javax.imageio.ImageIO;
-import javax.swing.*;
-import javax.swing.filechooser.FileSystemView;
-import java.awt.*;
+import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.nio.file.FileAlreadyExistsException;
@@ -58,6 +56,16 @@ public class FileService {
         }
     }
 
+    public void create(CreateFolderRequest folder) {
+        String path = root + "/" + getAccountHash() + "/" + folder;
+
+        try {
+            Files.createDirectories(Path.of(path));
+        } catch (IOException e) {
+            throw new RuntimeException("Could not create folder " + folder.getName());
+        }
+    }
+
     public Resource load(String filename) {
         try {
             String basePath = root + "/" + getAccountHash();
@@ -88,6 +96,7 @@ public class FileService {
                 String filename = path.getFileName().toString();
                 String ext = com.google.common.io.Files.getFileExtension(filename);
                 Long fileSize = path.toFile().length();
+                Boolean isFile = path.toFile().isFile();
                 String url = MvcUriComponentsBuilder.fromMethodName(
                                 FileController.class,
                                 "getFile",
@@ -96,7 +105,7 @@ public class FileService {
                         .build()
                         .toString();
 
-                return new FileInfo(filename, ext, fileSize, url);
+                return new FileInfo(filename, ext, url, fileSize, isFile);
             }).collect(Collectors.toList());
 
             return new FilesResponse(files, folderSize);
@@ -105,8 +114,11 @@ public class FileService {
         }
     }
 
-    public void delete() {
-
+    public void delete(List<String> filesName) {
+        for(String fileName: filesName) {
+            File fileToDelete = Path.of(root + "/" + getAccountHash() + "/" + fileName).toFile();
+           fileToDelete.delete();
+        }
     }
 
     public void deleteAll() {

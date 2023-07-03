@@ -12,6 +12,7 @@ import lombok.NoArgsConstructor;
 public class FileInfo {
     private String name;
     private String ext;
-    private Long size;
     private String url;
+    private Long size;
+    private Boolean isFile;
 }
